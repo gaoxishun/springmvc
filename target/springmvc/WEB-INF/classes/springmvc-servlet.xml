@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="  
+    http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    http://www.springframework.org/schema/tx   
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd   
+    http://www.springframework.org/schema/context   
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/mvc      
+    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- HandlerMapping -->
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" />
+
+	<!-- HandlerAdapter -->
+	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+
+	<!-- ViewResolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+<!--	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:messages_zh_CN.properties</value>
+			</list>
+		</property>
+	</bean>-->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages"/>
+	</bean>
+
+	<!-- 处理器 -->
+	<bean name="/hello" class="cn.gavin.springmvc.web.controller.HelloWorldController" />
+	<bean name="/hello1" class="cn.gavin.springmvc.web.controller.HelloWorldAbstractController" />
+	<bean name="/helloWithoutReturnModelAndView" class="cn.gavin.springmvc.web.controller.HelloWorldWithoutReturnModelAndViewController" />
+
+	<bean name="/helloWithPOST" class="cn.gavin.springmvc.web.controller.HelloWorldAbstractController">
+		<property name="supportedMethods" value="POST"></property>
+	</bean>
+	
+	<bean name="/helloRequireSession" class="cn.gavin.springmvc.web.controller.HelloWorldAbstractController">
+		<property name="requireSession" value="true"></property>
+	</bean>
+	 
+	 <bean name="/helloCache" class="cn.gavin.springmvc.web.controller.HelloWorldCacheController">
+	 	<property name="cacheSeconds" value="5"/>
+	 </bean>
+	 
+	 <bean name="/helloNoCache" class="cn.gavin.springmvc.web.controller.HelloWorldCacheController">
+        <property name="cacheSeconds" value="0"/>
+    </bean>
+    
+	<bean name="/forwardToServlet" class="org.springframework.web.servlet.mvc.ServletForwardingController">
+		<property name="servletName" value="ForwardingServlet"></property>
+	</bean>
+	
+	<bean name="/helloLastModified" class="cn.gavin.springmvc.web.controller.HelloWorldLastModifiedCacheController"/>
+
+	<bean name="/abstractCommand" class="cn.gavin.springmvc.web.controller.MyAbstractCommandController">
+        <!-- 也可以通过依赖注入 注入命令实现类 -->
+        <!-- property name="commandClass" value="cn.gavin.springmvc.model.UserModel"/-->
+	</bean>
+	
+	<bean name="/simpleForm" class="cn.gavin.springmvc.web.controller.RegisterSimpleFormController">
+		<property name="formView" value="register" />
+		<property name="successView" value="redirect:/success" />
+	</bean>
+	
+	<bean name="/canCancelForm" class="cn.gavin.springmvc.web.controller.CanCancelRegisterSimpleFormController">
+        <property name="formView" value="register"/>
+        <property name="successView" value="redirect:/success"/>
+        
+        <property name="cancelParamKey" value="_cancel"/>
+        <property name="cancelView" value="redirect:/cancel"/>
+    </bean>
+    
+	<bean name="/success" class="cn.gavin.springmvc.web.controller.SuccessController" />
+	<bean name="/cancel" class="cn.gavin.springmvc.web.controller.CancelController"/>
+
+	<bean name="/infoFillWizard" class="cn.gavin.springmvc.web.controller.InfoFillWizardFormController">
+		<property name="pages">
+			<list>
+				<value>wizard/baseInfo</value>
+				<value>wizard/schoolInfo</value>
+				<value>wizard/workInfo</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="/parameterizableView" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="success" />
+	</bean>
+	<bean name="/index?" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/index1/*" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/index2/**" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/*.html" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/index3/*.html" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+	<bean name="/*.htm" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test" />
+		<property name="suffix" value="test" />
+	</bean>
+	<bean name="/long/long" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test1"></property>
+	</bean>
+	<bean name="/long/**/abc" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test2" />
+	</bean>
+	<bean name="/long/**" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test3" />
+	</bean>
+	<bean name="/**" class="org.springframework.web.servlet.mvc.UrlFilenameViewController">
+		<property name="prefix" value="test4"></property>
+	</bean>
+	
+	<bean name="/OrdinaryPolling" class="cn.gavin.springmvc.web.controller.connection.ConnectionController" />
+	<bean name="/ajaxRequest" class="cn.gavin.springmvc.web.controller.connection.ConnectionController" />
+	
+	<bean id="userService" class="cn.gavin.springmvc.web.service.UserService"/>
+<!--	<bean id="propertiesMethodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<property name="mappings">
+			<props>
+				<prop key="/create">create</prop>
+				<prop key="/update">update</prop>
+				<prop key="/delete">delete</prop>
+				<prop key="/list">list</prop>
+				<prop key="/**">list</prop>
+			</props>
+		</property>
+	</bean>-->
+	<bean name="/user/**" class="cn.gavin.springmvc.web.controller.UserController">
+		<property name="userService" ref="userService"/>
+		<property name="createView" value="user/create"/>
+	    <property name="updateView" value="user/update"/>
+	    <property name="deleteView" value="user/delete"/>
+	    <property name="listView" value="user/list"/>
+	    <property name="redirectToListView" value="redirect:/user/list"/>
+	    <!-- 使用PropertiesMethodNameResolver来解析功能处理方法名 -->
+	    <!--<property name="methodNameResolver" ref="propertiesMethodNameResolver"/>-->
+    </bean>
+
+	<bean id="userModelValidator" class="cn.gavin.springmvc.web.controller.UserModelValidator"/>
+   <bean name="/validator" class="cn.gavin.springmvc.web.controller.RegisterSimpleFormController">
+	   <property name="formView" value="registorAndValidator"/>
+	   <property name="successView" value="redirect:/success"/>
+	   <property name="validator" ref="userModelValidator"/>
+   </bean>
+</beans>
